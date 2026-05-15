@@ -9,7 +9,7 @@ import streamlit as st
 load_dotenv()
 
 # ---------------- API KEYS ----------------
-ALPHA_KEY = os.getenv("ALPHA_VANTAGE_API_KEY") or st.secrets["ALPHA_VANTAGE_API_KEY"]
+ALPHA_KEY = os.getenv("ALPHA_API_KEY") or st.secrets["ALPHA_API_KEY"]
 FINNHUB_KEY = os.getenv("FINNHUB_API_KEY") or st.secrets["FINNHUB_API_KEY"]
 MARKETSTACK_KEY = os.getenv("MARKETSTACK_API_KEY") or st.secrets["MARKETSTACK_API_KEY"]
 

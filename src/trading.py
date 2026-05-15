@@ -1,18 +1,16 @@
 from dotenv import load_dotenv
 import os
+import streamlit as st
 
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 
-# ---------------- LOAD ENV ----------------
 load_dotenv()
 
-# ---------------- API KEYS ----------------
-API_KEY = os.getenv("ALPACA_API_KEY")
-SECRET_KEY = os.getenv("ALPACA_SECRET_KEY")
+API_KEY = os.getenv("ALPACA_API_KEY") or st.secrets["ALPACA_API_KEY"]
+SECRET_KEY = os.getenv("ALPACA_SECRET_KEY") or st.secrets["ALPACA_SECRET_KEY"]
 
-# ---------------- CLIENT ----------------
 client = TradingClient(API_KEY, SECRET_KEY, paper=True)
 
 

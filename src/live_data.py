@@ -2,12 +2,13 @@ from dotenv import load_dotenv
 import os
 import requests
 import pandas as pd
+import streamlit as st
 
 # ---------------- LOAD ENV ----------------
 load_dotenv()
 
 # ---------------- API KEY ----------------
-FINNHUB_KEY = os.getenv("FINNHUB_API_KEY")
+FINNHUB_KEY = os.getenv("FINNHUB_API_KEY") or st.secret("FINNHUB_API_KEY")
 
 
 # ---------------- LIVE DATA ----------------

@@ -97,49 +97,74 @@ if live_mode:
 
     st.subheader("🔴 Live Market Feed")
 
+    live_key = f"live_df_{selected_stock}"
+
+    # 🔥 CREATE SEPARATE DATAFRAME FOR EACH STOCK
+    if live_key not in st.session_state:
+        st.session_state[live_key] = pd.DataFrame()
+
     placeholder = st.empty()
 
     while True:
-        st.write("Current Selected Stock:", selected_stock)
+
         live_data = fetch_live_price(selected_stock)
 
         if live_data:
+
             new_row = pd.DataFrame([live_data])
 
-            st.session_state.live_df = pd.concat(
-                [st.session_state.live_df, new_row],
+            st.session_state[live_key] = pd.concat(
+                [st.session_state[live_key], new_row],
                 ignore_index=True
             )
 
-            st.session_state.live_df.drop_duplicates(
-                subset=["Date"], keep="last", inplace=True
+            st.session_state[live_key].drop_duplicates(
+                subset=["Date"],
+                keep="last",
+                inplace=True
             )
 
-            st.session_state.live_df.sort_values("Date", inplace=True)
-
-            if len(st.session_state.live_df) > 1000:
-                st.session_state.live_df = st.session_state.live_df.tail(500)
-
-        live_df = st.session_state.live_df.copy()
-        live_df["Date"] = pd.to_datetime(live_df["Date"])
-
-        live_filtered = apply_timeframe(live_df)
-
-        with placeholder.container():
-
-            current_price = live_df["Close"].iloc[-1]
-            st.metric("Live Price", round(current_price, 2))
-
-            fig_live = px.line(
-                live_filtered,
-                x="Date",
-                y="Close",
-                title="Live Price Movement"
+            st.session_state[live_key].sort_values(
+                "Date",
+                inplace=True
             )
 
-            st.plotly_chart(apply_layout(fig_live), use_container_width=True)
+            if len(st.session_state[live_key]) > 1000:
+                st.session_state[live_key] = (
+                    st.session_state[live_key].tail(500)
+                )
+
+        live_df = st.session_state[live_key].copy()
+
+        if not live_df.empty:
+
+            live_df["Date"] = pd.to_datetime(live_df["Date"])
+
+            live_filtered = apply_timeframe(live_df)
+
+            with placeholder.container():
+
+                current_price = live_df["Close"].iloc[-1]
+
+                st.metric(
+                    f"{selected_stock} Live Price",
+                    round(current_price, 2)
+                )
+
+                fig_live = px.line(
+                    live_filtered,
+                    x="Date",
+                    y="Close",
+                    title=f"{selected_stock} Live Price Movement"
+                )
+
+                st.plotly_chart(
+                    apply_layout(fig_live),
+                    use_container_width=True
+                )
 
         time.sleep(refresh_rate)
+
         st.rerun()
 
 # ---------------- NORMAL DASHBOARD ----------------

@@ -100,7 +100,7 @@ if live_mode:
     placeholder = st.empty()
 
     while True:
-
+        st.write("Current Selected Stock:", selected_stock)
         live_data = fetch_live_price(selected_stock)
 
         if live_data:

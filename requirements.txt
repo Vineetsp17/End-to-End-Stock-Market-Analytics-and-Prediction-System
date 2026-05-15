@@ -1,0 +1,11 @@
+requests
+pandas
+numpy
+matplotlib
+scikit-learn
+streamlit
+plotly
+statsmodels
+xgboost
+python-dotenv
+alpaca-py

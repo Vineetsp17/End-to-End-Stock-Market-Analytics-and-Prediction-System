@@ -92,6 +92,14 @@ if live_mode:
 
     st.subheader("🔴 Live Market Feed")
 
+    # 🔥 RESET LIVE DATA WHEN STOCK CHANGES
+    if "live_stock" not in st.session_state:
+        st.session_state.live_stock = selected_stock
+
+    if st.session_state.live_stock != selected_stock:
+        st.session_state.live_df = pd.DataFrame()
+        st.session_state.live_stock = selected_stock
+
     placeholder = st.empty()
 
     while True:
@@ -99,6 +107,7 @@ if live_mode:
         live_data = fetch_live_price(selected_stock)
 
         if live_data:
+
             new_row = pd.DataFrame([live_data])
 
             st.session_state.live_df = pd.concat(
@@ -107,34 +116,50 @@ if live_mode:
             )
 
             st.session_state.live_df.drop_duplicates(
-                subset=["Date"], keep="last", inplace=True
+                subset=["Date"],
+                keep="last",
+                inplace=True
             )
 
-            st.session_state.live_df.sort_values("Date", inplace=True)
+            st.session_state.live_df.sort_values(
+                "Date",
+                inplace=True
+            )
 
             if len(st.session_state.live_df) > 1000:
                 st.session_state.live_df = st.session_state.live_df.tail(500)
 
         live_df = st.session_state.live_df.copy()
-        live_df["Date"] = pd.to_datetime(live_df["Date"])
 
-        live_filtered = apply_timeframe(live_df)
+        if not live_df.empty:
 
-        with placeholder.container():
+            live_df["Date"] = pd.to_datetime(live_df["Date"])
 
-            current_price = live_df["Close"].iloc[-1]
-            st.metric("Live Price", round(current_price, 2))
+            live_filtered = apply_timeframe(live_df)
 
-            fig_live = px.line(
-                live_filtered,
-                x="Date",
-                y="Close",
-                title="Live Price Movement"
-            )
+            with placeholder.container():
 
-            st.plotly_chart(apply_layout(fig_live), use_container_width=True)
+                current_price = live_df["Close"].iloc[-1]
+
+                st.metric(
+                    f"{selected_stock} Live Price",
+                    round(current_price, 2)
+                )
+
+                fig_live = px.line(
+                    live_filtered,
+                    x="Date",
+                    y="Close",
+                    title=f"{selected_stock} Live Price Movement"
+                )
+
+                st.plotly_chart(
+                    apply_layout(fig_live),
+                    use_container_width=True
+                )
 
         time.sleep(refresh_rate)
+
         st.rerun()
 
 # ---------------- NORMAL DASHBOARD ----------------

@@ -8,7 +8,7 @@ import streamlit as st
 load_dotenv()
 
 # ---------------- API KEY ----------------
-FINNHUB_KEY = os.getenv("FINNHUB_API_KEY") or st.secret("FINNHUB_API_KEY")
+FINNHUB_KEY = os.getenv("FINNHUB_API_KEY") or st.secrets["FINNHUB_API_KEY"]
 
 
 # ---------------- LIVE DATA ----------------
